@@ -1,0 +1,149 @@
+services:
+  gateway-service:
+    build:
+      context: ./gateway-service
+      dockerfile: Dockerfile
+    ports:
+      - "8020:8020"
+    environment:
+      - PRODUCT_SERVICE_URL=http://product-service:8050
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8020/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  product-service:
+    build:
+      context: ./product-service
+      dockerfile: Dockerfile
+    ports:
+      - "8050:8050"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-products:5432/products
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Deeplearning89629202@#$!
+      - GATEWAY_SERVICE_URL=http://gateway-service:8020
+    depends_on:
+      db-products:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8050/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  order-service:
+    build:
+      context: ./order-service
+      dockerfile: Dockerfile
+    ports:
+      - "8030:8030"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-orders:5432/orders
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Deeplearning89629202@#$!
+      - PRODUCT_SERVICE_URL=http://product-service:8050
+    depends_on:
+      product-service:
+        condition: service_healthy
+      db-orders:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8030/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  shipping-service:
+    build:
+      context: ./shipping-service
+      dockerfile: Dockerfile
+    ports:
+      - "8040:8040"
+    environment:
+      - SPRING_DATASOURCE_URL=jdbc:postgresql://db-shipping:5432/shipping
+      - SPRING_DATASOURCE_USERNAME=postgres
+      - SPRING_DATASOURCE_PASSWORD=Deeplearning89629202@#$!
+      - ORDER_SERVICE_URL=http://order-service:8030
+    depends_on:
+      order-service:
+        condition: service_healthy
+      db-shipping:
+        condition: service_healthy
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8040/actuator/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db-products:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Deeplearning89629202@#$!
+    ports:
+      - "5432:5432"
+    volumes:
+      - products-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db-orders:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: ordered_products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Deeplearning89629202@#$!
+    ports:
+      - "5433:5432"
+    volumes:
+      - orders-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+  db-shipping:
+    image: postgres:14
+    environment:
+      POSTGRES_DB: shipped_products
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: Deeplearning89629202@#$!
+    ports:
+      - "5434:5432"
+    volumes:
+      - shipping-data:/var/lib/postgresql/data
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD", "pg_isready", "-U", "postgres"]
+      interval: 30s
+      timeout: 10s
+      retries: 5
+
+volumes:
+  products-data:
+  orders-data:
+  shipping-data:
+
+networks:
+  app-network:
+    driver: bridge

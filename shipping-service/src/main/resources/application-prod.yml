@@ -1,0 +1,29 @@
+spring:
+    application:
+        name: shipping-service
+    datasource:
+        driver-class-name: org.postgresql.Driver
+        url: jdbc:postgresql://localhost:5432/shipping
+        username: postgres
+        password: Deeplearning89629202@#$!
+    jpa:
+        hibernate:
+            ddl-auto: create
+        database: postgresql
+        show-sql: true
+        database-platform: org.hibernate.dialect.PostgreSQLDialect
+server:
+    port: 8040
+
+management:
+    endpoints:
+        web:
+            exposure:
+                include: health
+    endpoint:
+        health:
+            show-details: always
+
+
+
+
