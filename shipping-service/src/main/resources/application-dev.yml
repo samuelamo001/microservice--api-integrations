@@ -3,7 +3,7 @@ spring:
         name: shipping-service
     datasource:
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/test?currentSchema=shipping
+        url: jdbc:postgresql://localhost:5432/microservice_shipped_products
         username: postgres
         password: Deeplearning89629202@#$!
     jpa:

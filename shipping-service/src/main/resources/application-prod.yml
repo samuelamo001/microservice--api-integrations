@@ -3,9 +3,9 @@ spring:
         name: shipping-service
     datasource:
         driver-class-name: org.postgresql.Driver
-        url: jdbc:postgresql://localhost:5432/shipping
+        url: jdbc:postgresql://db-shipping:5432/microservice_shipped_products
         username: postgres
-        password: Deeplearning89629202@#$!
+        password: deeplearning
     jpa:
         hibernate:
             ddl-auto: create

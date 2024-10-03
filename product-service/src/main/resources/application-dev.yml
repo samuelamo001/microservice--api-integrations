@@ -5,7 +5,7 @@ spring:
     name: product-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/test?currentSchema=products
+    url: jdbc:postgresql://localhost:5432/microservice_products
     username: postgres
     password: Deeplearning89629202@#$!
   jpa:

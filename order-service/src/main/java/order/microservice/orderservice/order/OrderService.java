@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.microservices.ecommerce.grpc.ProductProto;
 import com.microservices.ecommerce.grpc.ProductServiceGrpc;
 import jakarta.persistence.EntityNotFoundException;
+import net.devh.boot.grpc.client.inject.GrpcClient;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -21,6 +22,7 @@ public class OrderService {
         this.orderRepository = orderRepository;
         this.orderedProductMapper = orderedProductMapper;
     }
+
 
     public ProductResponse getProduct(Long productId) {
 

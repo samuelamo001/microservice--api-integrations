@@ -15,6 +15,7 @@ public class ProductGRPTService extends ProductServiceGrpc.ProductServiceImplBas
         this.productRepository = productRepository;
     }
     public void getProduct(ProductProto.ProductRequest request, StreamObserver<ProductProto.ProductResponse> responseObserver) {
+
         Product product = productRepository.findById(request.getProductId()).orElseThrow(()->
                 new ProductNotFoundException(request.getProductId()));
 

@@ -1,16 +1,16 @@
 grpc:
   client:
     product-service:
-      address: "localhost:8050"
+      address: static://localhost:9090
       negotiation-type: plaintext
 spring:
   application:
     name: order-service
   datasource:
     driver-class-name: org.postgresql.Driver
-    url: jdbc:postgresql://localhost:5432/orders
+    url: jdbc:postgresql://db-orders:5432/microservice_ordered_products
     username: postgres
-    password: Deeplearning89629202@#$!
+    password: deeplearning
   jpa:
     hibernate:
       ddl-auto: update
