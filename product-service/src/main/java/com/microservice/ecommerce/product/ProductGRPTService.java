@@ -6,14 +6,19 @@ import com.microservices.ecommerce.grpc.ProductProto;
 import com.microservices.ecommerce.grpc.ProductServiceGrpc;
 import io.grpc.stub.StreamObserver;
 import net.devh.boot.grpc.server.service.GrpcService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @GrpcService
 public class ProductGRPTService extends ProductServiceGrpc.ProductServiceImplBase {
     private final ProductRepository productRepository;
 
+    private final Logger logger = LoggerFactory.getLogger(ProductGRPTService.class);
+
     public ProductGRPTService(ProductRepository productRepository) {
         this.productRepository = productRepository;
     }
+    @Override
     public void getProduct(ProductProto.ProductRequest request, StreamObserver<ProductProto.ProductResponse> responseObserver) {
 
         Product product = productRepository.findById(request.getProductId()).orElseThrow(()->
@@ -29,6 +34,9 @@ public class ProductGRPTService extends ProductServiceGrpc.ProductServiceImplBas
                 .build();
 
         responseObserver.onNext(productResponse);
+
+        logger.info("Order service just requested a product with id {}", product.getProductId());
+
         responseObserver.onCompleted();
     }
 }

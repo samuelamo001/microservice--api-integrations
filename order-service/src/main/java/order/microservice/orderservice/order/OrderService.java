@@ -6,6 +6,8 @@ import com.microservices.ecommerce.grpc.ProductProto;
 import com.microservices.ecommerce.grpc.ProductServiceGrpc;
 import jakarta.persistence.EntityNotFoundException;
 import net.devh.boot.grpc.client.inject.GrpcClient;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -13,9 +15,12 @@ import java.util.stream.Collectors;
 
 @Service
 public class OrderService {
+
     private final ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub;
     private final OrderRepository orderRepository;
     private final OrderedProductMapper orderedProductMapper;
+
+    private final Logger logger = LoggerFactory.getLogger(OrderService.class);
 
     public OrderService(ProductServiceGrpc.ProductServiceBlockingStub productServiceBlockingStub, OrderRepository orderRepository, OrderedProductMapper orderedProductMapper) {
         this.productServiceBlockingStub = productServiceBlockingStub;
@@ -45,8 +50,9 @@ public class OrderService {
     }
 
     // The shipping service calls this method
-    public OrderedProductResponse getOrderedProduct(Long productId) {
-        OrderedProduct orderedProduct = orderRepository.findById(productId).orElseThrow(EntityNotFoundException::new);
+    public OrderedProductResponse getOrderedProduct(Long orderId) {
+        OrderedProduct orderedProduct = orderRepository.findById(orderId).orElseThrow(EntityNotFoundException::new);
+        logger.info("The shipping service just requested an order with is {} to be shipped", orderId);
         return orderedProductMapper.convertToOrderedProductResponse(orderedProduct);
     }
 
@@ -56,5 +62,9 @@ public class OrderService {
                 .stream()
                 .map(orderedProductMapper::convertToOrderedProductResponse)
                 .collect(Collectors.toList());
+    }
+
+    public void deleteOrderedProduct(Long productId) {
+        orderRepository.deleteById(productId);
     }
 }
